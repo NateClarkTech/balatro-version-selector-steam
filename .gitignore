@@ -7,8 +7,9 @@ Desktop.ini
 .vscode/
 .idea/
 
-# Local runtime copies / logs (installed under %LocalAppData%\BalatroMode)
+# Local runtime copies / logs (Windows LocalAppData / Linux XDG data)
 *.log
+*.vdf.bak-balatro-mode
 
 # Accidental local settings / backups from testing
 settings.jkr
