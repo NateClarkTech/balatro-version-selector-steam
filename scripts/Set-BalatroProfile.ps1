@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
   Set Balatro's active profile slot (1, 2, or 3) in settings.jkr before launch.
