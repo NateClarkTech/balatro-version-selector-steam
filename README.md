@@ -143,26 +143,6 @@ cd path\to\balatro_mod
 
 ---
 
-## Publishing this repo to GitHub
-
-```powershell
-cd path\to\balatro_mod
-git init
-git add .
-git commit -m "Initial commit: Balatro vanilla/multiplayer mode switcher"
-gh repo create balatro-mode-switcher --public --source=. --remote=origin --push
-```
-
-Or create an empty repo on github.com first, then:
-
-```powershell
-git remote add origin https://github.com/<you>/<repo>.git
-git branch -M main
-git push -u origin main
-```
-
----
-
 ## License
 
 MIT — see [LICENSE](LICENSE).
