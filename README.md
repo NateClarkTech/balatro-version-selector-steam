@@ -23,7 +23,23 @@ Modes are defined in a JSON config — add as many modpacks / setups as you want
 
 ---
 
-## Quick start
+## Linux (Proton)
+
+Balatro on Linux runs under **Proton** (no official native build). Use the bash tools:
+
+→ See **[linux/README.md](linux/README.md)**
+
+```bash
+cd linux && chmod +x *.sh lib/*.sh lib/*.py
+./setup-steam-launch.sh
+./balatro-mode.sh
+```
+
+Optional per-mode Proton tool via `"proton": "proton_experimental"` in `modes.json`.
+
+---
+
+## Quick start (Windows)
 
 1. Clone or download this repo.
 2. Close Balatro.
@@ -93,6 +109,7 @@ Template with extra examples: [`config/modes.example.json`](config/modes.example
 | `profile` | Optional Balatro profile slot `1`–`3` |
 | `enabledMods` | Optional. If set, **only** matching mod folders stay active; others are renamed to `Name.disabled`. Supports `*` / `?` globs. Omit the field to leave Mods untouched. |
 | `gameDir` / `modsDir` | Optional per-mode overrides (else top-level / auto-detect) |
+| `proton` | **Linux only.** Steam compat tool name (`proton_experimental`, `proton_9`, GE folder name, …). Omit to leave Steam’s setting alone. |
 
 **Notes**
 
@@ -148,12 +165,16 @@ C:\Windows\System32\cmd.exe /c C:\Users\<YOU>\AppData\Local\BalatroMode\steam-ga
 ├── config/
 │   ├── modes.json                # default (vanilla + multiplayer)
 │   └── modes.example.json        # extra examples
-└── scripts/
-    ├── Invoke-BalatroMode.ps1    # engine
-    ├── Balatro-SteamGate.bat
-    ├── steam-gate-ui.cmd
-    ├── Set-BalatroProfile.ps1
-    └── balatro-mode.ps1          # legacy CLI helper
+├── scripts/                      # Windows engine
+│   ├── Invoke-BalatroMode.ps1
+│   ├── Balatro-SteamGate.bat
+│   ├── steam-gate-ui.cmd
+│   ├── Set-BalatroProfile.ps1
+│   └── balatro-mode.ps1
+└── linux/                        # Linux / Proton (see linux/README.md)
+    ├── balatro-mode.sh
+    ├── steam-gate.sh
+    └── lib/
 ```
 
 ### CLI

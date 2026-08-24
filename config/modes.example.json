@@ -1,5 +1,5 @@
 {
-  "$schema_comment": "Copy to modes.json (repo config\\ or %LocalAppData%\\BalatroMode\\) and edit. First matching config path wins — see README.",
+  "$schema_comment": "Copy to modes.json. On Linux/Proton, prefer %LocalAppData% equivalent: ~/.local/share/balatro-mode/modes.json",
   "gameDir": "",
   "modsDir": "",
   "modes": [
@@ -8,7 +8,8 @@
       "label": "Single-player (vanilla)",
       "description": "Lovely off — stock Balatro",
       "lovely": false,
-      "profile": 1
+      "profile": 1,
+      "proton": "proton_experimental"
     },
     {
       "id": "multiplayer",
@@ -16,15 +17,17 @@
       "description": "Lovely on — SMODS + Balatro Multiplayer",
       "lovely": true,
       "profile": 2,
-      "enabledMods": ["smods", "multiplayer*"]
+      "enabledMods": ["smods", "multiplayer*"],
+      "proton": "proton_experimental"
     },
     {
       "id": "example-modpack",
       "label": "Example modpack",
-      "description": "Edit id/label/enabledMods for your pack; remove this entry if unused",
+      "description": "Edit id/label/enabledMods; optional proton tool name",
       "lovely": true,
       "profile": 3,
-      "enabledMods": ["smods", "YourModFolder"]
+      "enabledMods": ["smods", "YourModFolder"],
+      "proton": "GE-Proton9-25"
     }
   ]
 }
