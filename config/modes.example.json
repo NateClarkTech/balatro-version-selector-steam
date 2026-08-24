@@ -1,0 +1,30 @@
+{
+  "$schema_comment": "Copy to modes.json (repo config\\ or %LocalAppData%\\BalatroMode\\) and edit. First matching config path wins — see README.",
+  "gameDir": "",
+  "modsDir": "",
+  "modes": [
+    {
+      "id": "vanilla",
+      "label": "Single-player (vanilla)",
+      "description": "Lovely off — stock Balatro",
+      "lovely": false,
+      "profile": 1
+    },
+    {
+      "id": "multiplayer",
+      "label": "Multiplayer",
+      "description": "Lovely on — SMODS + Balatro Multiplayer",
+      "lovely": true,
+      "profile": 2,
+      "enabledMods": ["smods", "multiplayer*"]
+    },
+    {
+      "id": "example-modpack",
+      "label": "Example modpack",
+      "description": "Edit id/label/enabledMods for your pack; remove this entry if unused",
+      "lovely": true,
+      "profile": 3,
+      "enabledMods": ["smods", "YourModFolder"]
+    }
+  ]
+}

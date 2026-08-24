@@ -1,93 +1,134 @@
 # Balatro Mode Switcher
 
-Windows helpers to switch **Steam Balatro** between:
+Windows tools to pick a **Balatro launch mode** before starting the game (Steam).
 
-| Mode | Lovely / mods | Profile slot |
-|------|----------------|--------------|
-| **Single-player** | Off (`version.dll` → `version.dll.disabled`) | **1** |
-| **Multiplayer** | On (Lovely + SMODS + Balatro Multiplayer) | **2** |
+Each mode can control:
 
-Also optional: a **Steam Play menu** so clicking Play asks vanilla vs modded.
+- **Lovely** on/off (`version.dll` ↔ `version.dll.disabled`)
+- **Profile slot** (1–3 in `settings.jkr`)
+- **Which mod folders are active** under `%AppData%\Balatro\Mods` (optional)
 
-> Not affiliated with LocalThunk, Steam, or Balatro Multiplayer. For personal use with a legitimate Steam copy.
+Modes are defined in a JSON config — add as many modpacks / setups as you want.
+
+> Not affiliated with LocalThunk, Steam, or Balatro Multiplayer. Use with a legitimate Steam copy.
 
 ---
 
 ## Requirements
 
-- Windows
+- Windows + PowerShell 5.1+
 - [Balatro](https://store.steampowered.com/app/2379780/Balatro/) on Steam
-- For multiplayer: [Balatro Multiplayer](https://github.com/Balatro-Multiplayer/BalatroMultiplayer) (or the Multiplayer Launcher) so that:
-  - `version.dll` (Lovely) exists next to `Balatro.exe`
-  - `%AppData%\Balatro\Mods` contains **smods** and **multiplayer\***
-- PowerShell 5.1+ (built into Windows 10/11)
+- For any **modded** mode: Lovely (`version.dll`) installed next to `Balatro.exe` (e.g. via [Balatro Multiplayer](https://github.com/Balatro-Multiplayer/BalatroMultiplayer) / Multiplayer Launcher)
+- Mods live in `%AppData%\Balatro\Mods`
 
 ---
 
-## Quick start (double-click)
+## Quick start
 
-1. Download or clone this repo anywhere you like.
-2. Close Balatro if it is open.
-3. Double-click one of:
+1. Clone or download this repo.
+2. Close Balatro.
+3. Double-click:
 
 | File | Action |
 |------|--------|
-| **`Balatro Mode.bat`** | Menu: switch and/or launch |
-| **`Balatro-Singleplayer.bat`** | Vanilla + profile 1 + launch via Steam |
-| **`Balatro-Multiplayer.bat`** | Modded + profile 2 + launch via Steam |
-| **`Balatro-Status.bat`** | Show current Lovely on/off state |
-
-If renaming `version.dll` fails, right-click → **Run as administrator**, or fix permissions on the Balatro install folder.
+| **`Balatro Mode.bat`** | Menu from your config → apply → launch |
+| **`Balatro-Singleplayer.bat`** | Apply mode id `vanilla` + launch |
+| **`Balatro-Multiplayer.bat`** | Apply mode id `multiplayer` + launch |
+| **`Balatro-Status.bat`** | List config modes + Lovely status |
+| **`Edit-Modes-Config.bat`** | Open `modes.json` in Notepad |
+| **`Setup-Steam-Launch-Menu.bat`** | Install Steam Play wrapper + config copy |
 
 ---
 
-## Optional: Steam Play menu (vanilla vs modded)
+## Custom modes (`modes.json`)
 
-This makes **Steam → Play** open a small console asking `[1] Single-player` / `[2] Multiplayer`.
+### Where the config lives
 
-### Setup
+First file found wins:
 
-1. Double-click **`Setup-Steam-Launch-Menu.bat`**.
-   - Copies scripts into `%LocalAppData%\BalatroMode\`
-   - Copies the Launch Options line to your clipboard
-2. Steam Library → right-click **Balatro** → **Properties** → **Launch Options**
-3. Clear the box, paste **exactly**:
+1. `%LocalAppData%\BalatroMode\modes.json` (created by Setup — best for Steam Play)
+2. `config\modes.json` in this repo
+
+Template with extra examples: [`config/modes.example.json`](config/modes.example.json)
+
+### Schema
+
+```json
+{
+  "gameDir": "",
+  "modsDir": "",
+  "modes": [
+    {
+      "id": "vanilla",
+      "label": "Single-player (vanilla)",
+      "description": "Lovely off — stock Balatro",
+      "lovely": false,
+      "profile": 1
+    },
+    {
+      "id": "multiplayer",
+      "label": "Multiplayer",
+      "description": "Lovely on — SMODS + Multiplayer",
+      "lovely": true,
+      "profile": 2,
+      "enabledMods": ["smods", "multiplayer*"]
+    },
+    {
+      "id": "my-pack",
+      "label": "My modpack",
+      "lovely": true,
+      "profile": 3,
+      "enabledMods": ["smods", "Cryptid", "Talisman"]
+    }
+  ]
+}
+```
+
+| Field | Meaning |
+|-------|---------|
+| `id` | Stable id for shortcuts (`-ModeId my-pack`) |
+| `label` | Text shown in the menu |
+| `description` | Optional subtitle |
+| `lovely` | `true` = enable Lovely; `false` = disable |
+| `profile` | Optional Balatro profile slot `1`–`3` |
+| `enabledMods` | Optional. If set, **only** matching mod folders stay active; others are renamed to `Name.disabled`. Supports `*` / `?` globs. Omit the field to leave Mods untouched. |
+| `gameDir` / `modsDir` | Optional per-mode overrides (else top-level / auto-detect) |
+
+**Notes**
+
+- The `lovely` dump folder under Mods is never disabled.
+- Close Balatro before switching.
+- After Steam updates, Lovely may need reinstalling if `version.dll` disappears.
+
+### Example: add a third modpack
+
+1. Install the mods into `%AppData%\Balatro\Mods`.
+2. Run **`Edit-Modes-Config.bat`** (or edit `%LocalAppData%\BalatroMode\modes.json`).
+3. Append a mode with `"enabledMods": ["smods", "YourMod", ...]`.
+4. Save. Next Steam Play / `Balatro Mode.bat` shows the new entry.
+
+Shortcut for a fixed mode (create your own `.bat`):
+
+```bat
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\Invoke-BalatroMode.ps1" -ModeId my-pack -Launch
+```
+
+---
+
+## Steam Play menu
+
+1. Run **`Setup-Steam-Launch-Menu.bat`** (copies scripts + `modes.json` into `%LocalAppData%\BalatroMode\`).
+2. Steam → Balatro → Properties → **Launch Options** → paste the copied line, e.g.
 
 ```text
 C:\Windows\System32\cmd.exe /c C:\Users\<YOU>\AppData\Local\BalatroMode\steam-gate.cmd %command%
 ```
 
-(Use the line Setup printed / copied — it already has your username.)
+3. **Play** → choose a mode from your config.
 
-4. Click **Play**. A window titled **Balatro Mode** should appear.
+**Undo:** clear Launch Options.
 
-### Undo
-
-Clear Balatro’s **Launch Options** field.
-
-### Logs
-
-If Play does nothing or fails:
-
-- Double-click **`Open-SteamGate-Log.bat`**, or open  
-  `%LocalAppData%\BalatroMode\steam-gate.log`
-
----
-
-## How it works
-
-1. **Mods on/off**  
-   Balatro Multiplayer loads via the Lovely injector (`version.dll` beside `Balatro.exe`).  
-   Single-player renames that DLL to `version.dll.disabled`. Mods stay in `%AppData%\Balatro\Mods` but do not load without Lovely.
-
-2. **Profile slots**  
-   The last-used profile is stored in `%AppData%\Balatro\settings.jkr` as `["profile"]=N`.  
-   Scripts patch that file (deflate-compressed Lua table) before launch:
-   - single-player → profile **1**
-   - multiplayer → profile **2**
-
-3. **Steam gate**  
-   Launch Options wrap the real game command so a visible console can ask which mode to use, then start `Balatro.exe`.
+**Log:** `Open-SteamGate-Log.bat` or `%LocalAppData%\BalatroMode\steam-gate.log`
 
 ---
 
@@ -97,27 +138,30 @@ If Play does nothing or fails:
 .
 ├── README.md
 ├── LICENSE
-├── Setup-Steam-Launch-Menu.bat   # one-time Steam Play setup
-├── Balatro Mode.bat              # offline menu
-├── Balatro-Singleplayer.bat
-├── Balatro-Multiplayer.bat
+├── Balatro Mode.bat
+├── Balatro-Singleplayer.bat      # ModeId=vanilla
+├── Balatro-Multiplayer.bat       # ModeId=multiplayer
 ├── Balatro-Status.bat
+├── Edit-Modes-Config.bat
+├── Setup-Steam-Launch-Menu.bat
 ├── Open-SteamGate-Log.bat
+├── config/
+│   ├── modes.json                # default (vanilla + multiplayer)
+│   └── modes.example.json        # extra examples
 └── scripts/
-    ├── Balatro-SteamGate.bat     # installed as steam-gate.cmd
-    ├── steam-gate-ui.cmd         # menu + mode + profile + launch
-    ├── Set-BalatroProfile.ps1    # edit settings.jkr profile slot
-    └── balatro-mode.ps1          # optional CLI (status / switch)
+    ├── Invoke-BalatroMode.ps1    # engine
+    ├── Balatro-SteamGate.bat
+    ├── steam-gate-ui.cmd
+    ├── Set-BalatroProfile.ps1
+    └── balatro-mode.ps1          # legacy CLI helper
 ```
 
-### Optional PowerShell CLI
+### CLI
 
 ```powershell
-cd path\to\balatro_mod
-.\scripts\balatro-mode.ps1 status
-.\scripts\balatro-mode.ps1 singleplayer
-.\scripts\balatro-mode.ps1 multiplayer -Launch
-.\scripts\Set-BalatroProfile.ps1 -Profile 1
+.\scripts\Invoke-BalatroMode.ps1 -List
+.\scripts\Invoke-BalatroMode.ps1 -Menu -Launch
+.\scripts\Invoke-BalatroMode.ps1 -ModeId multiplayer -Launch
 ```
 
 ---
@@ -126,20 +170,28 @@ cd path\to\balatro_mod
 
 | Symptom | Fix |
 |---------|-----|
-| Play does nothing | Re-run Setup; check Launch Options; open `steam-gate.log` |
-| `...SteamGate.bat C:\Program` error | Do **not** wrap `%command%` inside the same quotes as the script path |
-| Cannot rename `version.dll` | Close Balatro; run as admin |
-| Wrong profile | Confirm slots 1/2 in-game; ensure game was closed when switching |
-| Multiplayer missing after Steam update | Steam may overwrite `version.dll` — reinstall Lovely / Multiplayer Launcher, then use Multiplayer mode again |
-| Profile script errors | Launch Balatro once normally so `settings.jkr` exists |
+| Play does nothing | Re-run Setup; check Launch Options; read `steam-gate.log` |
+| Unknown mode id | Ids must match `modes.json`; shortcuts use `vanilla` / `multiplayer` by default |
+| Wrong mods loaded | Set `enabledMods` on that mode; check for `*.disabled` folders in Mods |
+| Cannot rename `version.dll` | Close game; run as Administrator |
+| Profile not changing | Close Balatro; ensure `settings.jkr` exists (launch once normally) |
 
 ---
 
 ## Disclaimer
 
-- Renaming files under `steamapps\common\Balatro` and editing `settings.jkr` is at your own risk. Keep Steam Cloud / backups in mind.
-- After a Balatro update, re-check Lovely and Launch Options.
-- This does not redistribute Balatro, Lovely, SMODS, or the multiplayer mod.
+Renaming files under the Balatro install / Mods folder and editing `settings.jkr` is at your own risk. Keep backups / Steam Cloud in mind.
+
+---
+
+## Publishing this repo to GitHub
+
+```powershell
+cd path\to\balatro_mod
+git add .
+git commit -m "Your message"
+git push -u origin main
+```
 
 ---
 

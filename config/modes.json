@@ -1,0 +1,21 @@
+{
+  "gameDir": "",
+  "modsDir": "",
+  "modes": [
+    {
+      "id": "vanilla",
+      "label": "Single-player (vanilla)",
+      "description": "Lovely off — stock Balatro",
+      "lovely": false,
+      "profile": 1
+    },
+    {
+      "id": "multiplayer",
+      "label": "Multiplayer",
+      "description": "Lovely on — SMODS + Balatro Multiplayer",
+      "lovely": true,
+      "profile": 2,
+      "enabledMods": ["smods", "multiplayer*"]
+    }
+  ]
+}
